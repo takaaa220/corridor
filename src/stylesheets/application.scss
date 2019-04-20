@@ -1,1 +1,48 @@
 @charset "UTF-8";
+
+@import "./reset";
+
+$red: #e66;
+$white: #ddd;
+$yellow: #ea3;
+
+.app {
+  align-items: center;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  width: 100%;
+}
+
+.board {
+  &:not(:root) {
+    background-color: $red;
+    display: grid;
+    grid-template-columns: 50px 50px 50px 50px 50px 50px 50px 50px 50px;
+    grid-template-rows: 50px 50px 50px 50px 50px 50px 50px 50px 50px;
+    grid-gap: 10px;
+    padding: 40px;
+  }
+
+  & &__item {
+    align-items: center;
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+  }
+}
+
+.stone {
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+
+  &_p1 {
+    background-color: $yellow;
+  }
+
+  &_p2 {
+    background-color: $white;
+  }
+}

@@ -1,12 +1,12 @@
 import * as firebase from "firebase/app";
 
 const config = {
-  apiKey: "AIzaSyDscaDR_hMSISXTl4R2XBXusON9E2ZMktc",
-  authDomain: "createidea-d9635.firebaseapp.com",
-  databaseURL: "https://createidea-d9635.firebaseio.com",
-  projectId: "createidea-d9635",
-  storageBucket: "createidea-d9635.appspot.com",
-  messagingSenderId: "234152879427"
+  apiKey: "AIzaSyAPGIhR6WFcNppgjq9DB6HmqNj7PTd_aaU",
+  authDomain: "numeron-55935.firebaseapp.com",
+  databaseURL: "https://numeron-55935.firebaseio.com",
+  projectId: "numeron-55935",
+  storageBucket: "numeron-55935.appspot.com",
+  messagingSenderId: "1047696793056"
 };
 const firebaseApp = firebase.initializeApp(config);
 export const firestore = firebaseApp.firestore();
