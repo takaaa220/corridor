@@ -18,29 +18,8 @@ $yellow: #ea3;
   &:not(:root) {
     background-color: $red;
     display: grid;
-    // grid-template-columns: 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px;
-    // grid-template-rows: 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px;
-    // grid-template-areas:
-    //   "i h i h i h i h i h i h i h i h i"
-    //   "w . w . w . w . w . w . w . w . w"
-    //   "i h i h i h i h i h i h i h i h i"
-    //   "w . w . w . w . w . w . w . w . w"
-    //   "i h i h i h i h i h i h i h i h i"
-    //   "w . w . w . w . w . w . w . w . w"
-    //   "i h i h i h i h i h i h i h i h i"
-    //   "w . w . w . w . w . w . w . w . w"
-    //   "i h i h i h i h i h i h i h i h i"
-    //   "w . w . w . w . w . w . w . w . w"
-    //   "i h i h i h i h i h i h i h i h i"
-    //   "w . w . w . w . w . w . w . w . w"
-    //   "i h i h i h i h i h i h i h i h i"
-    //   "w . w . w . w . w . w . w . w . w"
-    //   "i h i h i h i h i h i h i h i h i"
-    //   "w . w . w . w . w . w . w . w . w"
-    //   "i h i h i h i h i h i h i h i h i";
-    grid-template-columns: repeat(9, 50px);
-    grid-template-rows: repeat(9, 50px);
-    grid-gap: 10px;
+    grid-template-columns: 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px;
+    grid-template-rows: 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px;
     padding: 40px;
   }
 
@@ -52,20 +31,16 @@ $yellow: #ea3;
     justify-content: center;
     list-style: none;
   }
+}
 
-  & &__h-wall {
-    //grid-area: h;
-  }
-
-  & &__w-wall {
-    //grid-area: w;
-  }
+.exist {
+  background-color: $yellow;
 }
 
 .stone {
   border-radius: 50%;
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
 
   &_p1 {
     background-color: $yellow;
