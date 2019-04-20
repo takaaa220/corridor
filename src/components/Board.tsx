@@ -1,29 +1,24 @@
 import * as React from "react";
 
-enum BoardType {
-  None,
-  P1,
-  P2
-}
-
 interface BoardProps {
-  boards: BoardType[];
+  p1: number;
+  p2: number;
 }
-
-const stone = ["", "p1", "p2"];
 
 const Board: React.SFC<BoardProps> = props => {
-  return (
-    <ul className="board">
-      {props.boards.map((board, index) => {
-        return (
-          <li key={index} className="board__item">
-            {board !== 0 ? <div className={`stone stone_${stone[board]}`} /> : null}
-          </li>
-        );
-      })}
-    </ul>
-  );
+  const { p1, p2 } = props;
+
+  const boards = [];
+  for (let index = 0; index < 81; index += 1) {
+    boards.push(
+      <li key={index} className="board__item">
+        {index === p1 ? <div className="stone stone_p1" /> : null}
+        {index === p2 ? <div className="stone stone_p2" /> : null}
+      </li>
+    );
+  }
+
+  return <ul className="board">{boards}</ul>;
 };
 
 export default Board;

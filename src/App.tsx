@@ -2,38 +2,29 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import Board from "./components/Board";
 
-enum BoardType {
-  None,
-  P1,
-  P2
-}
-
 export interface AppProps {}
 
 export interface AppState {
-  boards: BoardType[];
+  p1: number;
+  p2: number;
 }
 
 class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
-      boards: this.init()
+      p1: 36,
+      p2: 44
     };
   }
 
-  init(): BoardType[] {
-    const boards: BoardType[] = Array(81).fill(BoardType.None);
-    boards[36] = BoardType.P1;
-    boards[44] = BoardType.P2;
-
-    return boards;
-  }
+  moveCharacter() {}
 
   render() {
+    const { p1, p2 } = this.state;
     return (
       <div className="app">
-        <Board boards={this.state.boards} />
+        <Board p1={p1} p2={p2} />
       </div>
     );
   }
