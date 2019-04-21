@@ -23,6 +23,7 @@ export interface AppState {
   hadWalls: number[];
   winner: Tarn | null;
   roomId: string;
+  isIniting: boolean;
 }
 
 class App extends React.Component<AppProps, AppState> {
@@ -36,29 +37,36 @@ class App extends React.Component<AppProps, AppState> {
       status: Status.Stone,
       hadWalls: [10, 10],
       winner: null,
-      roomId: ""
+      roomId: "",
+      isIniting: true
     };
 
     this.moveCharacter = this.moveCharacter.bind(this);
     this.putHWall = this.putHWall.bind(this);
     this.putWWall = this.putWWall.bind(this);
+    this.initFunc = this.initFunc.bind(this);
+    this.setRoomId = this.setRoomId.bind(this);
   }
 
   initFunc() {
-    // firestore
-    //   .collection("rooms")
-    //   .add({
-    //     hWalls: [-1, -1],
-    //     wWalls: [-1, -1],
-    //     hasWalls: [10, 10]
-    //   })
-    //   .then(ref => {
-    //     this.setState({ roomId: ref.id });
-    //   })
-    //   .catch(() => {
-    //     alert("errorが発生しました．リロードして下さい");
-    //   });
-    console.log("init");
+    firestore
+      .collection("rooms")
+      .add({
+        hWalls: [-1, -1],
+        wWalls: [-1, -1],
+        hasWalls: [10, 10]
+      })
+      .then(ref => {
+        this.setRoomId(ref.id);
+      })
+      .catch(error => {
+        console.log(error);
+        alert("errorが発生しました．リロードして下さい");
+      });
+  }
+
+  setRoomId(roomId: string) {
+    this.setState({ roomId, isIniting: false });
   }
 
   isWall(isW: boolean, x: any, y: any): boolean {
@@ -182,7 +190,7 @@ class App extends React.Component<AppProps, AppState> {
         fontSize: "40px"
       }
     };
-    const { tarn, stone, hWall, wWall, status, hadWalls, winner } = this.state;
+    const { tarn, stone, hWall, wWall, status, hadWalls, winner, isIniting } = this.state;
     return (
       <div className="app">
         <div className="app__player">
@@ -236,7 +244,7 @@ class App extends React.Component<AppProps, AppState> {
         <ReactModal isOpen={winner !== null} style={customStyles}>
           {winner === 0 ? "Player1" : "Player2"} の勝ち
         </ReactModal>
-        <InitialModal isOpen={true} initFunc={this.initFunc} />
+        <InitialModal isOpen={isIniting} initFunc={this.initFunc} setRoomId={this.setRoomId} />
       </div>
     );
   }

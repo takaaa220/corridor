@@ -1,9 +1,11 @@
 import * as React from "react";
 import * as ReactModal from "react-modal";
+import { firestore } from "../utils/firebase";
 
 interface InitialModalProps {
   isOpen: boolean;
   initFunc: Function;
+  setRoomId: Function;
 }
 
 interface InitialModalState {
@@ -30,7 +32,14 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
   }
 
   onSubmit() {
-    console.log(this.state.roomId);
+    const ref = firestore.collection("rooms").doc(this.state.roomId);
+    ref.get().then(doc => {
+      if (doc.exists) {
+        this.props.setRoomId(doc.id);
+      } else {
+        alert("not found");
+      }
+    });
   }
 
   onSearch() {
