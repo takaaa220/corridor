@@ -35,7 +35,6 @@ class App extends React.Component<AppProps, AppState> {
     this.moveCharacter = this.moveCharacter.bind(this);
     this.putHWall = this.putHWall.bind(this);
     this.putWWall = this.putWWall.bind(this);
-    // this.changeStatus = this.changeStatus.bind(this);
   }
 
   isWall(isW: boolean, x: any, y: any): boolean {
@@ -185,7 +184,7 @@ class App extends React.Component<AppProps, AppState> {
 
         <div className="app__player">
           {tarn === 1 ? <p style={{ color: "red" }}>あなたのターンです！</p> : null}
-          <h3>Player2 (赤)</h3>
+          <h3>Player2 (グレー)</h3>
           <p>残り壁枚数：{hadWalls[0]}枚</p>
         </div>
       </div>
