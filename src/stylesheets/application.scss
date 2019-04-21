@@ -121,3 +121,45 @@ body {
   width: 50%;
   height: 50%;
 }
+
+.init-modal {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+
+  &__buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  &__button {
+    align-items: center;
+    background-color: $yellow;
+    border-radius: 30px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    font-size: 18px;
+    font-weight: bold;
+    justify-content: center;
+    height: 50px;
+    width: 240px;
+  }
+
+  &__form {
+    border-radius: 6px;
+    border: none;
+    box-sizing: border-box;
+    font-size: 18px;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    width: 100%;
+  }
+
+  &__heading {
+    color: $red;
+    font-size: 48px;
+    margin-bottom: 40px;
+  }
+}
