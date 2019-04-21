@@ -6,12 +6,64 @@ $red: #e66;
 $white: #ddd;
 $yellow: #ea3;
 
+body {
+  cursor: default;
+}
+
 .app {
   align-items: center;
   display: flex;
   height: 100vh;
   justify-content: center;
   width: 100%;
+
+  & &__board {
+    text-align: center;
+
+    p {
+      margin-top: 20px;
+      line-height: 1.7;
+    }
+  }
+
+  & &__buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  & &__button {
+    align-items: center;
+    background-color: $yellow;
+    border-radius: 30px;
+    cursor: pointer;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    height: 50px;
+    font-size: 20px;
+    font-weight: bold;
+    width: calc(100% / 3.2);
+
+    &_selected {
+      background-color: gray;
+      cursor: not-allowed;
+    }
+  }
+
+  & &__player {
+    font-size: 18px;
+    padding: 30px;
+    text-align: center;
+
+    h3 {
+      font-size: 32px;
+    }
+
+    p {
+      margin: 15px 0;
+    }
+  }
 }
 
 .board {
@@ -21,6 +73,19 @@ $yellow: #ea3;
     grid-template-columns: 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px;
     grid-template-rows: 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px 10px 50px;
     padding: 40px;
+    position: relative;
+  }
+
+  &_stone {
+    cursor: pointer;
+  }
+
+  &_horizon {
+    cursor: url(https://placehold.jp/eeaa33/eeaa33/110x10.png) 30 5, auto;
+  }
+
+  &_vertical {
+    cursor: url(https://placehold.jp/eeaa33/eeaa33/10x110.png) 5 30, auto;
   }
 
   & &__item {

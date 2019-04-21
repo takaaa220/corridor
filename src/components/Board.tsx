@@ -1,14 +1,23 @@
 import * as React from "react";
 
+enum Status {
+  Stone,
+  Vertical,
+  Horizon
+}
+
 interface BoardProps {
   stone: number[];
   moveCharacter: Function;
   hWall: boolean[];
   wWall: boolean[];
+  putHWall: Function;
+  putWWall: Function;
+  status: Status;
 }
 
 const Board: React.SFC<BoardProps> = props => {
-  const { stone, moveCharacter, hWall, wWall } = props;
+  const { stone, moveCharacter, putHWall, putWWall, hWall, wWall, status } = props;
   const cHWall = hWall.slice();
 
   const boards = [];
@@ -23,14 +32,17 @@ const Board: React.SFC<BoardProps> = props => {
         </div>
       );
       if (jj !== 8) {
+        const indexI = 72 - cHWall.length;
         const first = cHWall[0];
         cHWall.shift();
-        boards.push(<div className={first ? "exist" : ""} />);
+        // tslint:disable-next-line:jsx-no-lambda
+        boards.push(<div className={first ? "exist" : ""} onClick={() => putHWall(indexI)} />);
       }
     }
     if (ii !== 8) {
       for (let jj = 0; jj < 9; jj += 1) {
-        boards.push(<div className={wWall[ii * 9 + jj] ? " exist" : ""} />);
+        // tslint:disable-next-line:jsx-no-lambda
+        boards.push(<div className={wWall[ii * 9 + jj] ? " exist" : ""} onClick={() => putWWall(ii * 9 + jj)} />);
         if (jj !== 8) {
           boards.push(<div />);
         }
@@ -38,17 +50,9 @@ const Board: React.SFC<BoardProps> = props => {
     }
   }
 
-  const wWalls = [];
-  for (let index = 0; index < wWall.length; index += 1) {
-    wWalls.push(<div key={index} className={`board__w-wall ${wWall[index] ? " board__w-wall_exist" : ""}`} />);
-  }
+  const statusPointer = ["stone", "vertical", "horizon"];
 
-  const hWalls = [];
-  for (let index = 0; index < hWall.length; index += 1) {
-    hWalls.push(<div key={index} className={`board__h-wall ${hWall[index] ? " board__h-wall_exist" : ""}`} />);
-  }
-
-  return <div className="board">{boards}</div>;
+  return <div className={`board board_${statusPointer[status]}`}>{boards}</div>;
 };
 
 export default Board;
