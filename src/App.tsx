@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import Board from "./components/Board";
+import * as ReactModal from "react-modal";
 
 enum Status {
   Stone,
@@ -136,8 +137,12 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   chagneTarn() {
-    let winner: Tarn | null = this.state.stone[0] % 9 === 8 ? 0 : null;
-    winner = this.state.stone[1] % 9 === 0 ? 1 : null;
+    let winner: Tarn | null = null;
+    if (this.state.stone[0] % 9 === 8) {
+      winner = 0;
+    } else if (this.state.stone[1] % 9 === 0) {
+      winner = 1;
+    }
     winner === null ? this.setState({ tarn: this.state.tarn === 1 ? 0 : 1 }) : this.setState({ winner });
   }
 
@@ -146,7 +151,17 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
-    const { tarn, stone, hWall, wWall, status, hadWalls } = this.state;
+    const customStyles = {
+      content: {
+        top: "50%",
+        left: "50%",
+        right: "auto",
+        bottom: "auto",
+        transform: "translate(-50%, -50%)",
+        fontSize: "40px"
+      }
+    };
+    const { tarn, stone, hWall, wWall, status, hadWalls, winner } = this.state;
     return (
       <div className="app">
         <div className="app__player">
@@ -192,12 +207,14 @@ class App extends React.Component<AppProps, AppState> {
             </p>
           </div>
         </div>
-
         <div className="app__player">
           {tarn === 1 ? <p style={{ color: "red" }}>あなたのターンです！</p> : null}
           <h3>Player2 (グレー)</h3>
           <p>残り壁枚数：{hadWalls[0]}枚</p>
         </div>
+        <ReactModal isOpen={winner !== null} style={customStyles}>
+          {winner === 0 ? "Player1" : "Player2"} の勝ち
+        </ReactModal>
       </div>
     );
   }
