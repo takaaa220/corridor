@@ -3,6 +3,7 @@ import * as ReactDOM from "react-dom";
 import Board from "./components/Board";
 import * as ReactModal from "react-modal";
 import InitialModal from "./components/InitialModal";
+import Loading from "./components/Loading";
 import { firestore } from "./utils/firebase";
 
 enum Status {
@@ -24,6 +25,7 @@ export interface AppState {
   winner: Tarn | null;
   roomId: string;
   isIniting: boolean;
+  isLoading: boolean;
 }
 
 class App extends React.Component<AppProps, AppState> {
@@ -38,7 +40,8 @@ class App extends React.Component<AppProps, AppState> {
       hadWalls: [10, 10],
       winner: null,
       roomId: "",
-      isIniting: true
+      isIniting: true,
+      isLoading: false
     };
 
     this.moveCharacter = this.moveCharacter.bind(this);
@@ -46,6 +49,21 @@ class App extends React.Component<AppProps, AppState> {
     this.putWWall = this.putWWall.bind(this);
     this.initFunc = this.initFunc.bind(this);
     this.setRoomId = this.setRoomId.bind(this);
+    this.startLoading = this.startLoading.bind(this);
+    this.endLoading = this.endLoading.bind(this);
+    this.checkLoading = this.checkLoading.bind(this);
+  }
+
+  checkLoading(): boolean {
+    return this.state.isLoading;
+  }
+
+  startLoading() {
+    this.setState({ isLoading: true });
+  }
+
+  endLoading() {
+    this.setState({ isLoading: false });
   }
 
   initFunc() {
@@ -63,6 +81,7 @@ class App extends React.Component<AppProps, AppState> {
         console.log(error);
         alert("errorが発生しました．リロードして下さい");
       });
+    this.endLoading();
   }
 
   setRoomId(roomId: string) {
@@ -244,7 +263,15 @@ class App extends React.Component<AppProps, AppState> {
         <ReactModal isOpen={winner !== null} style={customStyles}>
           {winner === 0 ? "Player1" : "Player2"} の勝ち
         </ReactModal>
-        <InitialModal isOpen={isIniting} initFunc={this.initFunc} setRoomId={this.setRoomId} />
+        <InitialModal
+          isOpen={isIniting}
+          initFunc={this.initFunc}
+          setRoomId={this.setRoomId}
+          startLoading={this.startLoading}
+          endLoading={this.endLoading}
+          checkLoading={this.checkLoading}
+        />
+        <Loading isLoading={this.state.isLoading} />
       </div>
     );
   }

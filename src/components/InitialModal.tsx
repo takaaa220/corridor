@@ -6,6 +6,9 @@ interface InitialModalProps {
   isOpen: boolean;
   initFunc: Function;
   setRoomId: Function;
+  startLoading: Function;
+  endLoading: Function;
+  checkLoading: Function;
 }
 
 interface InitialModalState {
@@ -24,7 +27,7 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
     };
     this.onChangeHandler = this.onChangeHandler.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-    this.onSearch = this.onSearch.bind(this);
+    this.onNewRoom = this.onNewRoom.bind(this);
   }
 
   onChangeHandler(e: MessageInputEvent) {
@@ -32,6 +35,11 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
   }
 
   onSubmit() {
+    if (this.props.checkLoading()) {
+      return;
+    }
+
+    this.props.startLoading();
     const ref = firestore.collection("rooms").doc(this.state.roomId);
     ref.get().then(doc => {
       if (doc.exists) {
@@ -40,9 +48,14 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
         alert("not found");
       }
     });
+    this.props.endLoading();
   }
 
-  onSearch() {
+  onNewRoom() {
+    if (this.props.checkLoading()) {
+      return;
+    }
+    this.props.startLoading();
     this.props.initFunc();
   }
 
@@ -66,7 +79,7 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
         <h3 className="init-modal__heading">ゲームを始める</h3>
         <input className="init-modal__form" type="text" onChange={this.onChangeHandler} />
         <div className="init-modal__buttons">
-          <div className="init-modal__button" onClick={this.onSearch}>
+          <div className="init-modal__button" onClick={this.onNewRoom}>
             新たに部屋を作る
           </div>
           <div className="init-modal__button" onClick={this.onSubmit}>
