@@ -18,6 +18,7 @@ export interface AppState {
   tarn: Tarn;
   status: Status;
   hadWalls: number[];
+  winner: Tarn | null;
 }
 
 class App extends React.Component<AppProps, AppState> {
@@ -29,7 +30,8 @@ class App extends React.Component<AppProps, AppState> {
       wWall: Array(72).fill(false),
       tarn: 0,
       status: Status.Stone,
-      hadWalls: [10, 10]
+      hadWalls: [10, 10],
+      winner: null
     };
 
     this.moveCharacter = this.moveCharacter.bind(this);
@@ -80,7 +82,8 @@ class App extends React.Component<AppProps, AppState> {
     if (this.state.status === Status.Stone && this.canPut(index)) {
       const { stone, tarn } = this.state;
       stone[tarn] = index;
-      this.setState({ stone, tarn: tarn === 0 ? 1 : 0 });
+      this.setState({ stone });
+      this.chagneTarn();
     }
   }
 
@@ -104,7 +107,8 @@ class App extends React.Component<AppProps, AppState> {
 
     const hadWalls = this.state.hadWalls;
     hadWalls[this.state.tarn] -= 1;
-    this.setState({ hWall, hadWalls, status: Status.Stone, tarn: this.state.tarn === 1 ? 0 : 1 });
+    this.setState({ hWall, hadWalls, status: Status.Stone });
+    this.chagneTarn();
   }
 
   putWWall(index: any) {
@@ -127,7 +131,14 @@ class App extends React.Component<AppProps, AppState> {
     const hadWalls = this.state.hadWalls;
     hadWalls[this.state.tarn] -= 1;
     console.log(hadWalls);
-    this.setState({ wWall, hadWalls, status: Status.Stone, tarn: this.state.tarn === 1 ? 0 : 1 });
+    this.setState({ wWall, hadWalls, status: Status.Stone });
+    this.chagneTarn();
+  }
+
+  chagneTarn() {
+    let winner: Tarn | null = this.state.stone[0] % 9 === 8 ? 0 : null;
+    winner = this.state.stone[1] % 9 === 0 ? 1 : null;
+    winner === null ? this.setState({ tarn: this.state.tarn === 1 ? 0 : 1 }) : this.setState({ winner });
   }
 
   changeStatus(status: Status) {
