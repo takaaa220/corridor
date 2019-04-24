@@ -88,6 +88,7 @@ class App extends React.Component<AppProps, AppState> {
 
   setRoomId(roomId: string) {
     this.setState({ roomId, isIniting: false });
+    this.catchRecord();
   }
 
   postRecord(type: Status, record: number) {
@@ -102,6 +103,15 @@ class App extends React.Component<AppProps, AppState> {
       })
       .catch(error => {
         console.error(error);
+      });
+  }
+
+  async catchRecord() {
+    firestore
+      .collection("records")
+      .where("roomId", "==", this.state.roomId)
+      .onSnapshot(snapshot => {
+        snapshot.forEach(doc => console.log(doc.data()));
       });
   }
 
