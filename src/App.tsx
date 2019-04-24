@@ -16,6 +16,7 @@ type Tarn = 0 | 1;
 export interface AppProps {}
 
 export interface AppState {
+  recordId: number;
   stone: number[];
   hWall: boolean[];
   wWall: boolean[];
@@ -32,6 +33,7 @@ class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
+      recordId: 0,
       stone: [36, 44],
       hWall: Array(72).fill(false),
       wWall: Array(72).fill(false),
@@ -88,6 +90,21 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({ roomId, isIniting: false });
   }
 
+  postRecord(type: Status, record: number) {
+    const { recordId, roomId } = this.state;
+    firestore
+      .collection("records")
+      .doc()
+      .set({ roomId, recordId, type, record })
+      .then(() => {
+        this.setState({ recordId: recordId + 1 });
+        console.log("finished!");
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
   isWall(isW: boolean, x: any, y: any): boolean {
     const interval = isW ? 9 : 8;
     const index = x + y * interval;
@@ -132,6 +149,7 @@ class App extends React.Component<AppProps, AppState> {
       const { stone, tarn } = this.state;
       stone[tarn] = index;
       this.setState({ stone });
+      this.postRecord(Status.Stone, index);
       this.chagneTarn();
     }
   }
@@ -157,6 +175,7 @@ class App extends React.Component<AppProps, AppState> {
     const hadWalls = this.state.hadWalls;
     hadWalls[this.state.tarn] -= 1;
     this.setState({ hWall, hadWalls, status: Status.Stone });
+    this.postRecord(Status.Vertical, index);
     this.chagneTarn();
   }
 
@@ -181,6 +200,7 @@ class App extends React.Component<AppProps, AppState> {
     hadWalls[this.state.tarn] -= 1;
     console.log(hadWalls);
     this.setState({ wWall, hadWalls, status: Status.Stone });
+    this.postRecord(Status.Horizon, index);
     this.chagneTarn();
   }
 
