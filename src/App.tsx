@@ -27,6 +27,7 @@ export interface AppState {
   roomId: string;
   isIniting: boolean;
   isLoading: boolean;
+  player: Tarn;
 }
 
 class App extends React.Component<AppProps, AppState> {
@@ -43,7 +44,8 @@ class App extends React.Component<AppProps, AppState> {
       winner: null,
       roomId: "",
       isIniting: true,
-      isLoading: false
+      isLoading: false,
+      player: 0
     };
 
     this.moveCharacter = this.moveCharacter.bind(this);
@@ -71,23 +73,19 @@ class App extends React.Component<AppProps, AppState> {
   initFunc() {
     firestore
       .collection("rooms")
-      .add({
-        hWalls: [-1, -1],
-        wWalls: [-1, -1],
-        hasWalls: [10, 10]
-      })
+      .add({ isPlaying: false })
       .then(ref => {
-        this.setRoomId(ref.id);
+        this.setRoomId(ref.id, true, 0);
+        this.waitPlayer();
       })
       .catch(error => {
         console.log(error);
         alert("errorが発生しました．リロードして下さい");
       });
-    this.endLoading();
   }
 
-  setRoomId(roomId: string) {
-    this.setState({ roomId, isIniting: false });
+  setRoomId(roomId: string, isIniting: boolean, player: Tarn) {
+    this.setState({ roomId, isIniting, player });
     this.catchRecord();
   }
 
@@ -106,7 +104,19 @@ class App extends React.Component<AppProps, AppState> {
       });
   }
 
-  async catchRecord() {
+  waitPlayer() {
+    firestore
+      .collection("rooms")
+      .doc(this.state.roomId)
+      .onSnapshot(doc => {
+        console.log("hello");
+        if (doc.data()!.isPlaying) {
+          this.setState({ isIniting: false, isLoading: false });
+        }
+      });
+  }
+
+  catchRecord() {
     firestore
       .collection("records")
       .where("roomId", "==", this.state.roomId)
@@ -300,6 +310,7 @@ class App extends React.Component<AppProps, AppState> {
           startLoading={this.startLoading}
           endLoading={this.endLoading}
           checkLoading={this.checkLoading}
+          roomId={this.state.roomId}
         />
         <Loading isLoading={this.state.isLoading} />
       </div>

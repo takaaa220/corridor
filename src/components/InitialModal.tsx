@@ -9,10 +9,12 @@ interface InitialModalProps {
   startLoading: Function;
   endLoading: Function;
   checkLoading: Function;
+  roomId: string;
 }
 
 interface InitialModalState {
   roomId: string;
+  errorText: string;
 }
 
 interface MessageInputEvent extends React.FormEvent<HTMLInputElement> {
@@ -23,7 +25,8 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
   constructor(props: InitialModalProps) {
     super(props);
     this.state = {
-      roomId: ""
+      roomId: "",
+      errorText: ""
     };
     this.onChangeHandler = this.onChangeHandler.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -42,10 +45,11 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
     this.props.startLoading();
     const ref = firestore.collection("rooms").doc(this.state.roomId);
     ref.get().then(doc => {
-      if (doc.exists) {
-        this.props.setRoomId(doc.id);
+      if (doc.exists && !doc.data()!.isPlaying) {
+        this.props.setRoomId(doc.id, false, 1);
+        ref.set({ isPlaying: true });
       } else {
-        alert("not found");
+        alert("not found!");
       }
     });
     this.props.endLoading();
@@ -74,7 +78,8 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
         position: "absolute"
       }
     };
-    return (
+
+    const initModal = (
       <ReactModal isOpen={isOpen} style={customStyles} className="init-modal">
         <h3 className="init-modal__heading">ゲームを始める</h3>
         <input className="init-modal__form" type="text" onChange={this.onChangeHandler} />
@@ -88,5 +93,18 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
         </div>
       </ReactModal>
     );
+
+    const waitModal = (
+      <ReactModal isOpen={isOpen} style={customStyles} className="init-modal">
+        <h3 className="init-modal__heading">対戦者待ち</h3>
+        <p className="init-modal__text">
+          <h4>{this.props.roomId}</h4>
+          <br />
+          を対戦者に教えて下さい！
+        </p>
+      </ReactModal>
+    );
+
+    return this.props.roomId ? waitModal : initModal;
   }
 }

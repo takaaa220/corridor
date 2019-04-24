@@ -162,6 +162,17 @@ body {
     font-size: 48px;
     margin-bottom: 40px;
   }
+
+  &__text {
+    font-size: 20px;
+
+    h4 {
+      color: $yellow;
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+  }
 }
 
 .loading-container {
