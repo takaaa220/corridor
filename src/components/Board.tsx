@@ -8,16 +8,14 @@ enum Status {
 
 interface BoardProps {
   stone: number[];
-  moveCharacter: Function;
+  onClick: Function;
   hWall: boolean[];
   wWall: boolean[];
-  putHWall: Function;
-  putWWall: Function;
   status: Status;
 }
 
 const Board: React.SFC<BoardProps> = props => {
-  const { stone, moveCharacter, putHWall, putWWall, hWall, wWall, status } = props;
+  const { stone, onClick, hWall, wWall, status } = props;
   const cHWall = hWall.slice();
 
   const boards = [];
@@ -26,7 +24,7 @@ const Board: React.SFC<BoardProps> = props => {
       const index = ii * 9 + jj;
       boards.push(
         // tslint:disable-next-line:jsx-no-lambda
-        <div key={index} className="board__item" onClick={() => moveCharacter(index)}>
+        <div key={index} className="board__item" onClick={() => onClick(index, Status.Stone)}>
           {index === stone[0] ? <div className="stone stone_p1" /> : null}
           {index === stone[1] ? <div className="stone stone_p2" /> : null}
         </div>
@@ -36,13 +34,14 @@ const Board: React.SFC<BoardProps> = props => {
         const first = cHWall[0];
         cHWall.shift();
         // tslint:disable-next-line:jsx-no-lambda
-        boards.push(<div className={first ? "exist" : ""} onClick={() => putHWall(indexI)} />);
+        boards.push(<div className={first ? "exist" : ""} onClick={() => onClick(indexI, Status.Vertical)} />);
       }
     }
     if (ii !== 8) {
       for (let jj = 0; jj < 9; jj += 1) {
+        const ind = ii * 9 + jj;
         // tslint:disable-next-line:jsx-no-lambda
-        boards.push(<div className={wWall[ii * 9 + jj] ? " exist" : ""} onClick={() => putWWall(ii * 9 + jj)} />);
+        boards.push(<div className={wWall[ind] ? " exist" : ""} onClick={() => onClick(ind, Status.Horizon)} />);
         if (jj !== 8) {
           boards.push(<div />);
         }

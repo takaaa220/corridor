@@ -56,6 +56,7 @@ class App extends React.Component<AppProps, AppState> {
     this.startLoading = this.startLoading.bind(this);
     this.endLoading = this.endLoading.bind(this);
     this.checkLoading = this.checkLoading.bind(this);
+    this.onClick = this.onClick.bind(this);
   }
 
   checkLoading(): boolean {
@@ -90,14 +91,13 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   postRecord(type: Status, record: number) {
-    const { recordId, roomId } = this.state;
+    const { recordId, roomId, player } = this.state;
     firestore
       .collection("records")
       .doc()
-      .set({ roomId, recordId, type, record })
+      .set({ roomId, recordId, type, record, player })
       .then(() => {
         this.setState({ recordId: recordId + 1 });
-        console.log("finished!");
       })
       .catch(error => {
         console.error(error);
@@ -116,12 +116,33 @@ class App extends React.Component<AppProps, AppState> {
       });
   }
 
+  detouchPlayer() {
+    firestore.collection("rooms").onSnapshot(() => {})();
+  }
+
   catchRecord() {
     firestore
       .collection("records")
       .where("roomId", "==", this.state.roomId)
+      .where("player", "==", this.state.player === 1 ? 0 : 1)
       .onSnapshot(snapshot => {
-        snapshot.forEach(doc => console.log(doc.data()));
+        snapshot.forEach(doc => {
+          if (doc.data().player !== this.state.player) {
+            switch (doc.data()!.type) {
+              case Status.Stone:
+                this.moveCharacter(doc.data()!.record);
+                break;
+              case Status.Horizon:
+                this.putWWall(doc.data()!.record);
+                break;
+              case Status.Vertical:
+                this.putHWall(doc.data()!.record);
+                break;
+              default:
+                alert("error");
+            }
+          }
+        });
       });
   }
 
@@ -238,6 +259,25 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({ status });
   }
 
+  onClick(index: any, type: Status) {
+    if (this.state.tarn !== this.state.player) {
+      return;
+    }
+    switch (type) {
+      case Status.Stone:
+        this.moveCharacter(index);
+        break;
+      case Status.Vertical:
+        this.putHWall(index);
+        break;
+      case Status.Horizon:
+        this.putWWall(index);
+        break;
+      default:
+        break;
+    }
+  }
+
   render() {
     const customStyles = {
       content: {
@@ -249,24 +289,16 @@ class App extends React.Component<AppProps, AppState> {
         fontSize: "40px"
       }
     };
-    const { tarn, stone, hWall, wWall, status, hadWalls, winner, isIniting } = this.state;
+    const { tarn, stone, hWall, wWall, status, hadWalls, winner, isIniting, player } = this.state;
     return (
       <div className="app">
         <div className="app__player">
-          {tarn === 0 ? <p style={{ color: "red" }}>あなたのターンです！</p> : null}
-          <h3>Player1 (黄)</h3>
+          {tarn === 0 ? <p style={{ color: "red" }}>{player === 0 ? "あなた" : "相手"} のターンです！</p> : null}
+          <h3>{player === 0 ? "あなた" : "相手"} (黄)</h3>
           <p>残り壁枚数：{hadWalls[0]}枚</p>
         </div>
         <div className="app__board">
-          <Board
-            stone={stone}
-            moveCharacter={this.moveCharacter}
-            hWall={hWall}
-            wWall={wWall}
-            putWWall={this.putWWall}
-            putHWall={this.putHWall}
-            status={status}
-          />
+          <Board stone={stone} hWall={hWall} wWall={wWall} onClick={this.onClick} status={status} />
           <div>
             <div className="app__buttons">
               <div
@@ -296,8 +328,8 @@ class App extends React.Component<AppProps, AppState> {
           </div>
         </div>
         <div className="app__player">
-          {tarn === 1 ? <p style={{ color: "red" }}>あなたのターンです！</p> : null}
-          <h3>Player2 (グレー)</h3>
+          {tarn === 1 ? <p style={{ color: "red" }}>{player === 1 ? "あなた" : "相手"} のターンです！</p> : null}
+          <h3>{player === 1 ? "あなた" : "相手"} (グレー)</h3>
           <p>残り壁枚数：{hadWalls[0]}枚</p>
         </div>
         <ReactModal isOpen={winner !== null} style={customStyles}>
