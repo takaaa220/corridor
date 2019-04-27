@@ -11,14 +11,16 @@ interface BoardProps {
   onClick: Function;
   hWall: boolean[];
   wWall: boolean[];
+  gaps: boolean[];
   status: Status;
 }
 
 const Board: React.SFC<BoardProps> = props => {
-  const { stone, onClick, hWall, wWall, status } = props;
+  const { stone, onClick, hWall, wWall, status, gaps } = props;
   const cHWall = hWall.slice();
 
   const boards = [];
+  let gapIndex = 0;
   for (let ii = 0; ii < 9; ii += 1) {
     for (let jj = 0; jj < 9; jj += 1) {
       const index = ii * 9 + jj;
@@ -43,7 +45,8 @@ const Board: React.SFC<BoardProps> = props => {
         // tslint:disable-next-line:jsx-no-lambda
         boards.push(<div className={wWall[ind] ? " exist" : ""} onClick={() => onClick(ind, Status.Horizon)} />);
         if (jj !== 8) {
-          boards.push(<div />);
+          boards.push(<div className={gaps[gapIndex] ? "exist" : ""} />);
+          gapIndex += 1;
         }
       }
     }

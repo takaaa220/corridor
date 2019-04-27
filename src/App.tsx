@@ -20,6 +20,7 @@ export interface AppState {
   stone: number[];
   hWall: boolean[];
   wWall: boolean[];
+  gaps: boolean[];
   tarn: Tarn;
   status: Status;
   hadWalls: number[];
@@ -38,6 +39,7 @@ class App extends React.Component<AppProps, AppState> {
       stone: [36, 44],
       hWall: Array(72).fill(false),
       wWall: Array(72).fill(false),
+      gaps: Array(64).fill(false),
       tarn: 0,
       status: Status.Stone,
       hadWalls: [10, 10],
@@ -201,6 +203,12 @@ class App extends React.Component<AppProps, AppState> {
       return;
     }
 
+    const gaps = this.state.gaps;
+    if (gaps[index]) {
+      return;
+    }
+    gaps[index] = true;
+
     const hWall = this.state.hWall;
     if (hWall[index] || hWall[index + 8]) {
       return;
@@ -212,7 +220,7 @@ class App extends React.Component<AppProps, AppState> {
     const hadWalls = this.state.hadWalls;
     const recordId = this.state.recordId + 1;
     hadWalls[this.state.tarn] -= 1;
-    this.setState({ hWall, hadWalls, recordId, status: Status.Stone });
+    this.setState({ hWall, hadWalls, recordId, gaps, status: Status.Stone });
     this.chagneTarn();
   }
 
@@ -224,6 +232,13 @@ class App extends React.Component<AppProps, AppState> {
     if (index % 9 === 8) {
       return;
     }
+
+    const gaps = this.state.gaps;
+    const convertedIndex = Math.floor(index / 9) * 8 + (index % 9);
+    if (gaps[convertedIndex]) {
+      return;
+    }
+    gaps[convertedIndex] = true;
 
     const wWall = this.state.wWall;
     if (wWall[index] || wWall[index + 1]) {
@@ -237,7 +252,7 @@ class App extends React.Component<AppProps, AppState> {
     const recordId = this.state.recordId + 1;
     hadWalls[this.state.tarn] -= 1;
 
-    this.setState({ wWall, hadWalls, recordId, status: Status.Stone });
+    this.setState({ wWall, hadWalls, recordId, gaps, status: Status.Stone });
     this.chagneTarn();
   }
 
@@ -304,7 +319,7 @@ class App extends React.Component<AppProps, AppState> {
         fontSize: "40px"
       }
     };
-    const { tarn, stone, hWall, wWall, status, hadWalls, winner, isIniting, player } = this.state;
+    const { tarn, stone, hWall, wWall, status, hadWalls, winner, isIniting, player, gaps } = this.state;
     return (
       <div className="app">
         <div className="app__player">
@@ -313,7 +328,7 @@ class App extends React.Component<AppProps, AppState> {
           <p>残り壁枚数：{hadWalls[0]}枚</p>
         </div>
         <div className="app__board">
-          <Board stone={stone} hWall={hWall} wWall={wWall} onClick={this.onClick} status={status} />
+          <Board stone={stone} hWall={hWall} wWall={wWall} gaps={gaps} onClick={this.onClick} status={status} />
           <div>
             <div className="app__buttons">
               <div
