@@ -128,8 +128,9 @@ body {
   flex-direction: column;
 
   &__buttons {
+    align-items: center;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     width: 100%;
   }
 
@@ -144,7 +145,16 @@ body {
     font-weight: bold;
     justify-content: center;
     height: 50px;
+    margin-bottom: 20px;
     width: 240px;
+  }
+
+  &__form-area {
+    align-items: center;
+    display: flex;
+    margin-bottom: 20px;
+    position: relative;
+    width: 80%;
   }
 
   &__form {
@@ -152,7 +162,7 @@ body {
     border: none;
     box-sizing: border-box;
     font-size: 18px;
-    margin-bottom: 20px;
+    margin-right: 5px;
     padding: 10px 20px;
     width: 100%;
   }
@@ -161,6 +171,19 @@ body {
     color: $red;
     font-size: 48px;
     margin-bottom: 40px;
+  }
+
+  &__submit {
+    background-color: $yellow;
+    border-radius: 6px;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    right: 6px;
+    padding: 10px;
+    position: absolute;
   }
 
   &__text {

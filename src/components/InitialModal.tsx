@@ -30,6 +30,7 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
     };
     this.onChangeHandler = this.onChangeHandler.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onSearch = this.onSearch.bind(this);
     this.onNewRoom = this.onNewRoom.bind(this);
   }
 
@@ -55,6 +56,26 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
     this.props.endLoading();
   }
 
+  onSearch() {
+    firestore
+      .collection("rooms")
+      .where("isPlaying", "==", false)
+      .limit(1)
+      .onSnapshot(snapshot => {
+        if (snapshot.empty) {
+          alert("対戦相手が見つかりません．");
+          return;
+        }
+        snapshot.forEach(doc => {
+          this.props.setRoomId(doc.id, false, 1);
+          firestore
+            .collection("rooms")
+            .doc(doc.id)
+            .set({ isPlaying: true });
+        });
+      });
+  }
+
   onNewRoom() {
     if (this.props.checkLoading()) {
       return;
@@ -72,7 +93,7 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
         right: "auto",
         bottom: "auto",
         transform: "translate(-50%, -50%)",
-        height: "200px",
+        height: "350px",
         width: "500px",
         borderRadius: "30px",
         position: "absolute"
@@ -82,13 +103,18 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
     const initModal = (
       <ReactModal isOpen={isOpen} style={customStyles} className="init-modal">
         <h3 className="init-modal__heading">ゲームを始める</h3>
-        <input className="init-modal__form" type="text" onChange={this.onChangeHandler} />
+        <div className="init-modal__form-area">
+          <input className="init-modal__form" type="text" onChange={this.onChangeHandler} />
+          <div className="init-modal__submit" onClick={this.onSubmit}>
+            探す
+          </div>
+        </div>
         <div className="init-modal__buttons">
+          <div className="init-modal__button" onClick={this.onSearch}>
+            適当に部屋に入る
+          </div>
           <div className="init-modal__button" onClick={this.onNewRoom}>
             新たに部屋を作る
-          </div>
-          <div className="init-modal__button" onClick={this.onSubmit}>
-            IDから部屋を探す
           </div>
         </div>
       </ReactModal>
@@ -98,6 +124,8 @@ export default class InitialModal extends React.Component<InitialModalProps, Ini
       <ReactModal isOpen={isOpen} style={customStyles} className="init-modal">
         <h3 className="init-modal__heading">対戦者待ち</h3>
         <p className="init-modal__text">
+          <p>対戦したい人が近くにいる場合は</p>
+          <br />
           <h4>{this.props.roomId}</h4>
           <br />
           を対戦者に教えて下さい！
