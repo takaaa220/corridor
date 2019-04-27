@@ -83,11 +83,12 @@ class App extends React.Component<AppProps, AppState> {
         console.log(error);
         alert("errorが発生しました．リロードして下さい");
       });
+    console.log("heeelo");
   }
 
   setRoomId(roomId: string, isIniting: boolean, player: Tarn) {
     this.setState({ roomId, isIniting, player });
-    this.catchRecord();
+    this.catchRecord(roomId);
   }
 
   postRecord(type: Status, record: number) {
@@ -97,7 +98,7 @@ class App extends React.Component<AppProps, AppState> {
       .doc()
       .set({ roomId, recordId, type, record, player })
       .then(() => {
-        this.setState({ recordId: recordId + 1 });
+        console.log(roomId, recordId, record, type, player);
       })
       .catch(error => {
         console.error(error);
@@ -109,25 +110,20 @@ class App extends React.Component<AppProps, AppState> {
       .collection("rooms")
       .doc(this.state.roomId)
       .onSnapshot(doc => {
-        console.log("hello");
         if (doc.data()!.isPlaying) {
           this.setState({ isIniting: false, isLoading: false });
         }
       });
   }
 
-  detouchPlayer() {
-    firestore.collection("rooms").onSnapshot(() => {})();
-  }
-
-  catchRecord() {
+  catchRecord(roomId: string) {
     firestore
       .collection("records")
-      .where("roomId", "==", this.state.roomId)
-      .where("player", "==", this.state.player === 1 ? 0 : 1)
+      .where("roomId", "==", roomId)
       .onSnapshot(snapshot => {
         snapshot.forEach(doc => {
-          if (doc.data().player !== this.state.player) {
+          console.log(doc);
+          if (this.state.recordId === doc.data().recordId) {
             switch (doc.data()!.type) {
               case Status.Stone:
                 this.moveCharacter(doc.data()!.record);
@@ -188,15 +184,15 @@ class App extends React.Component<AppProps, AppState> {
   moveCharacter(index: any) {
     if (this.state.status === Status.Stone && this.canPut(index)) {
       const { stone, tarn } = this.state;
+      const recordId = this.state.recordId + 1;
       stone[tarn] = index;
-      this.setState({ stone });
-      this.postRecord(Status.Stone, index);
+      this.setState({ stone, recordId });
       this.chagneTarn();
     }
   }
 
   putHWall(index: any) {
-    if (this.state.status !== Status.Vertical || this.state.hadWalls[this.state.tarn] === 0) {
+    if (this.state.hadWalls[this.state.tarn] === 0) {
       return;
     }
 
@@ -214,14 +210,14 @@ class App extends React.Component<AppProps, AppState> {
     hWall[index + 8] = true;
 
     const hadWalls = this.state.hadWalls;
+    const recordId = this.state.recordId + 1;
     hadWalls[this.state.tarn] -= 1;
-    this.setState({ hWall, hadWalls, status: Status.Stone });
-    this.postRecord(Status.Vertical, index);
+    this.setState({ hWall, hadWalls, recordId, status: Status.Stone });
     this.chagneTarn();
   }
 
   putWWall(index: any) {
-    if (this.state.status !== Status.Horizon || this.state.hadWalls[this.state.tarn] === 0) {
+    if (this.state.hadWalls[this.state.tarn] === 0) {
       return;
     }
 
@@ -238,11 +234,26 @@ class App extends React.Component<AppProps, AppState> {
     wWall[index + 1] = true;
 
     const hadWalls = this.state.hadWalls;
+    const recordId = this.state.recordId + 1;
     hadWalls[this.state.tarn] -= 1;
-    console.log(hadWalls);
-    this.setState({ wWall, hadWalls, status: Status.Stone });
-    this.postRecord(Status.Horizon, index);
+
+    this.setState({ wWall, hadWalls, recordId, status: Status.Stone });
     this.chagneTarn();
+  }
+
+  endGame(winner: Tarn) {
+    this.setState({ winner });
+
+    firestore
+      .collection("rooms")
+      .doc(this.state.roomId)
+      .delete()
+      .then(() => {
+        console.log("delete");
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   chagneTarn() {
@@ -252,6 +263,7 @@ class App extends React.Component<AppProps, AppState> {
     } else if (this.state.stone[1] % 9 === 0) {
       winner = 1;
     }
+
     winner === null ? this.setState({ tarn: this.state.tarn === 1 ? 0 : 1 }) : this.setState({ winner });
   }
 
@@ -260,18 +272,21 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   onClick(index: any, type: Status) {
-    if (this.state.tarn !== this.state.player) {
+    if (this.state.tarn !== this.state.player || this.state.status !== type) {
       return;
     }
     switch (type) {
       case Status.Stone:
         this.moveCharacter(index);
+        this.postRecord(Status.Stone, index);
         break;
       case Status.Vertical:
         this.putHWall(index);
+        this.postRecord(Status.Vertical, index);
         break;
       case Status.Horizon:
         this.putWWall(index);
+        this.postRecord(Status.Horizon, index);
         break;
       default:
         break;
@@ -333,7 +348,7 @@ class App extends React.Component<AppProps, AppState> {
           <p>残り壁枚数：{hadWalls[0]}枚</p>
         </div>
         <ReactModal isOpen={winner !== null} style={customStyles}>
-          {winner === 0 ? "Player1" : "Player2"} の勝ち
+          {winner === player ? "あなたの勝ち" : "あなたの負け"}
         </ReactModal>
         <InitialModal
           isOpen={isIniting}

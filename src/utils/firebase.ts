@@ -1,4 +1,4 @@
-import * as firebase from "firebase";
+import { initializeApp } from "firebase";
 
 const config = {
   apiKey: "AIzaSyAPGIhR6WFcNppgjq9DB6HmqNj7PTd_aaU",
@@ -8,5 +8,5 @@ const config = {
   storageBucket: "numeron-55935.appspot.com",
   messagingSenderId: "1047696793056"
 };
-const firebaseApp = firebase.initializeApp(config);
+const firebaseApp = initializeApp(config);
 export const firestore = firebaseApp.firestore();
